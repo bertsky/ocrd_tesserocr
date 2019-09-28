@@ -67,7 +67,7 @@ class TesserocrRecognize(Processor):
             LOG.info("Using model '%s' in %s for recognition at the %s level",
                      model, get_languages()[0], maxlevel)
             # todo: populate GetChoiceIterator() with LSTM models, too:
-            #tessapi.SetVariable("lstm_choice_mode", "2")
+            tessapi.SetVariable("lstm_choice_mode", "2")
             # todo: determine relevancy of these variables:
             # tessapi.SetVariable("tessedit_single_match", "0")
             #
@@ -331,9 +331,9 @@ class TesserocrRecognize(Processor):
         while result_it and not result_it.Empty(RIL.SYMBOL):
             glyph_id = '%s_glyph%04d' % (word.id, glyph_no)
             LOG.debug("Decoding text in glyph '%s'", glyph_id)
-            #  glyph_text = result_it.GetUTF8Text(RIL.SYMBOL) # equals first choice?
+            glyph_text = result_it.GetUTF8Text(RIL.SYMBOL) # equals first choice?
             glyph_conf = result_it.Confidence(RIL.SYMBOL)/100 # equals first choice?
-            #LOG.debug('best glyph: "%s" [%f]', glyph_text, glyph_conf)
+            LOG.debug('best glyph: "%s" [%f]', glyph_text, glyph_conf)
             bbox = result_it.BoundingBox(RIL.SYMBOL)
             # convert to absolute coordinates:
             polygon = coordinates_for_segment(polygon_from_x0y0x1y1(bbox),
@@ -345,7 +345,7 @@ class TesserocrRecognize(Processor):
             for (choice_no, choice) in enumerate(choice_it):
                 alternative_text = choice.GetUTF8Text()
                 alternative_conf = choice.Confidence()/100
-                #LOG.debug('alternative glyph: "%s" [%f]', alternative_text, alternative_conf)
+                LOG.debug('alternative glyph: "%s" [%f]', alternative_text, alternative_conf)
                 if (glyph_conf - alternative_conf > CHOICE_THRESHOLD_CONF or
                     choice_no > CHOICE_THRESHOLD_NUM):
                     break
