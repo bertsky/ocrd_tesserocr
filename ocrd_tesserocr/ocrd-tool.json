@@ -1499,6 +1499,33 @@
         }
       }
      },
+     "ocrd-tesserocr-segment-para": {
+      "executable": "ocrd-tesserocr-segment-para",
+      "categories": ["Layout analysis"],
+      "description": "Segment text regions into paragraph text regions with Tesseract",
+      "input_file_grp_cardinality": 1,
+      "output_file_grp_cardinality": 1,
+      "steps": ["layout/segmentation/region"],
+      "parameters": {
+        "dpi": {
+          "type": "number",
+          "format": "float",
+          "description": "pixel density in dots per inch (overrides any meta-data in the images)",
+          "default": 0
+        },
+        "padding": {
+          "type": "number",
+          "format": "integer",
+          "description": "extend detected cell rectangles by this many (true) pixels",
+          "default": 0
+        },
+        "shrink_polygons": {
+          "type": "boolean",
+          "default": false,
+          "description": "annotate polygon coordinates instead of bounding box rectangles by projecting the convex hull of all symbols"
+        }
+      }
+     },
      "ocrd-tesserocr-segment-line": {
       "executable": "ocrd-tesserocr-segment-line",
       "categories": ["Layout analysis"],

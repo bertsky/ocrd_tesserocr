@@ -5,6 +5,7 @@ from os.path import join
 import math
 
 import numpy as np
+from shapely.geometry import Polygon, Point
 from tesserocr import (
     RIL, PSM, PT, OEM,
     Orientation,
@@ -764,6 +765,16 @@ class TesserocrRecognize(Processor):
                     Unicode=it.GetUTF8Text(ril).rstrip("\n\f"),
                     # iterator scores are arithmetic averages, too
                     conf=it.Confidence(ril)/100.0))
+            elif len(getattr(region, 'get_TextLine', [])):
+                # region is now recursive, but already contained lines:
+                # so move those lines covered to this new para
+                poly = Polygon(polygon)
+                for line in list(region.get_TextLine()):
+                    line_xywh = xywh_from_points(line.get_Coords().points)
+                    if poly.contains(Point(line_xywh['x'] + line_xywh['w'] // 2,
+                                           line_xywh['y'] + line_xywh['h'] // 2)):
+                        para.add_TextLine(line)
+                        line.parent_object_ = para
 
     def _process_cells_in_table(self, result_it, region, rogroup, page_coords, mapping):
         if self.parameter['segmentation_level'] == 'cell':
